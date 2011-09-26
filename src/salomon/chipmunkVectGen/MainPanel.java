@@ -19,9 +19,30 @@ public class MainPanel extends JPanel implements MouseListener {
 	private ArrayList<Point> points = new ArrayList<Point>();
 	private Point imgPos = new Point(0, 0);
 
-	public Image img;
+	private Image img;
+	private boolean isNewShape;
 	
-    public MainPanel() {
+	public void setImg(Image img) {
+		this.img = img;
+		this.startNewShape();
+	}
+
+	public void startNewShape() {
+		isNewShape = true;
+		points.clear();
+		this.repaint();
+	}
+
+	public void endNewShape() {
+		this.isNewShape = false;
+		this.repaint();
+	}
+
+	public boolean isNewShape() {
+		return this.isNewShape;
+	}
+
+	public MainPanel() {
         //setBorder(BorderFactory.createLineBorder(Color.black));
         this.addMouseListener(this);
     }

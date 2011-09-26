@@ -1,31 +1,20 @@
 package salomon.chipmunkVectGen;
 
-import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.filechooser.FileFilter;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.BoxLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import javax.swing.JButton;
-import javax.swing.Box;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileFilter;
 
 public class MainWindow {
 
@@ -64,16 +53,22 @@ public class MainWindow {
 		frame.setBounds(100, 100, 585, 348);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
-		
-		JMenu mnFile = new JMenu("file");
-		menuBar.add(mnFile);
-		
 		final MainPanel panel = new MainPanel();
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
+		
+		frame.getContentPane().add(panel);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(UIManager.getColor("Button.background"));
+		panel_1.setMaximumSize(new Dimension(200, 32767));
+		panel_1.setMinimumSize(new Dimension(200, 10));
+		panel_1.setPreferredSize(new Dimension(200, 10));
+		frame.getContentPane().add(panel_1);
+		
+		final JButton NSButton = new JButton("New shape");
 
-		JMenuItem mntmLoad = new JMenuItem("Load Image");
-		mntmLoad.addActionListener(new ActionListener() {
+		JButton btnNewButton_1 = new JButton("Load Image");
+		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				final JFileChooser fc = new JFileChooser();
 				fc.addChoosableFileFilter(new FileFilter() {
@@ -104,40 +99,31 @@ public class MainWindow {
 					previousDir = fc.getCurrentDirectory();
 					File f = fc.getSelectedFile();
 					try {
-						panel.img = ImageIO.read(f);
-						panel.repaint();
+						panel.setImg(ImageIO.read(f));
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
+				
+				NSButton.setText("End Shape");
 			}
 		});
-		mnFile.add(mntmLoad);
-		
-		JMenuItem mntmPrintCArray = new JMenuItem("Print C array");
-		mnFile.add(mntmPrintCArray);
-		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
-		
-		frame.getContentPane().add(panel);
-		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(UIManager.getColor("Button.background"));
-		panel_1.setMaximumSize(new Dimension(200, 32767));
-		panel_1.setMinimumSize(new Dimension(200, 10));
-		panel_1.setPreferredSize(new Dimension(200, 10));
-		FlowLayout flowLayout = (FlowLayout) panel_1.getLayout();
-		frame.getContentPane().add(panel_1);
-		
-		JButton btnNewButton = new JButton("New shape");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		
-		JButton btnNewButton_1 = new JButton("Load Image");
 		panel_1.add(btnNewButton_1);
-		panel_1.add(btnNewButton);
+
+		NSButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (panel.isNewShape()) {
+					panel.endNewShape();
+					NSButton.setText("Start New Shape");
+				}
+				else {
+					panel.startNewShape();
+					NSButton.setText("End Shape");
+				}
+			}
+		});
+		panel_1.add(NSButton);
 		
 		JButton btnExportShapeVects = new JButton("Export Shape Vects");
 		panel_1.add(btnExportShapeVects);
