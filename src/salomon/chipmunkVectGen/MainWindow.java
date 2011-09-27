@@ -15,6 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
+import java.awt.Component;
+import java.awt.Rectangle;
 
 public class MainWindow {
 
@@ -58,17 +60,22 @@ public class MainWindow {
 		
 		frame.getContentPane().add(panel);
 		
-		JPanel panel_1 = new JPanel();
-		panel_1.setBackground(UIManager.getColor("Button.background"));
-		panel_1.setMaximumSize(new Dimension(200, 32767));
-		panel_1.setMinimumSize(new Dimension(200, 10));
-		panel_1.setPreferredSize(new Dimension(200, 10));
-		frame.getContentPane().add(panel_1);
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setBounds(new Rectangle(21, 0, 0, 0));
+		buttonPanel.setBackground(UIManager.getColor("Button.background"));
+		buttonPanel.setMaximumSize(new Dimension(200, 32767));
+		buttonPanel.setMinimumSize(new Dimension(200, 10));
+		buttonPanel.setPreferredSize(new Dimension(200, 10));
+		frame.getContentPane().add(buttonPanel);
 		
-		final JButton NSButton = new JButton("New shape");
+		final JButton NewShapeButton = new JButton("New shape");
+		NewShapeButton.setEnabled(false);
 
-		JButton btnNewButton_1 = new JButton("Load Image");
-		btnNewButton_1.addActionListener(new ActionListener() {
+		final JButton ExportShapeButton = new JButton("Export Shape Vects");
+		ExportShapeButton.setEnabled(false);
+
+		JButton loadImageButton = new JButton("Load Image");
+		loadImageButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				final JFileChooser fc = new JFileChooser();
 				fc.addChoosableFileFilter(new FileFilter() {
@@ -100,33 +107,33 @@ public class MainWindow {
 					File f = fc.getSelectedFile();
 					try {
 						panel.setImg(ImageIO.read(f));
+						NewShapeButton.setText("End Shape");
+						NewShapeButton.setEnabled(true);
+						ExportShapeButton.setEnabled(true);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
-				
-				NSButton.setText("End Shape");
 			}
 		});
-		panel_1.add(btnNewButton_1);
+		buttonPanel.add(loadImageButton);
 
-		NSButton.addActionListener(new ActionListener() {
+		NewShapeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (panel.isNewShape()) {
 					panel.endNewShape();
-					NSButton.setText("Start New Shape");
+					NewShapeButton.setText("Start New Shape");
 				}
 				else {
 					panel.startNewShape();
-					NSButton.setText("End Shape");
+					NewShapeButton.setText("End Shape");
 				}
 			}
 		});
-		panel_1.add(NSButton);
+		buttonPanel.add(NewShapeButton);
 		
-		JButton btnExportShapeVects = new JButton("Export Shape Vects");
-		panel_1.add(btnExportShapeVects);
+		buttonPanel.add(ExportShapeButton);
 	}
 
 }
