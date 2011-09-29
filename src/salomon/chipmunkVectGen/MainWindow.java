@@ -1,7 +1,9 @@
 package salomon.chipmunkVectGen;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -13,16 +15,21 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextPane;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Component;
-import java.awt.Rectangle;
 
 public class MainWindow {
 
-	private JFrame	frame;
+	private JFrame frame;
 	
 	private File previousDir;
+	
+	public JButton newShapeButton;
+	public JButton exportShapeButton;
+	public JButton importShapeButton;
+	
+	public MainPanel mainPanel;
 
 	/**
 	 * Launch the application.
@@ -55,10 +62,10 @@ public class MainWindow {
 		frame.setBounds(100, 100, 585, 348);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		final MainPanel panel = new MainPanel();
+		mainPanel = new MainPanel(this);
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
 		
-		frame.getContentPane().add(panel);
+		frame.getContentPane().add(mainPanel);
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setBounds(new Rectangle(21, 0, 0, 0));
@@ -68,11 +75,14 @@ public class MainWindow {
 		buttonPanel.setPreferredSize(new Dimension(200, 10));
 		frame.getContentPane().add(buttonPanel);
 		
-		final JButton NewShapeButton = new JButton("New shape");
-		NewShapeButton.setEnabled(false);
+		newShapeButton = new JButton("New shape");
+		newShapeButton.setEnabled(false);
 
-		final JButton ExportShapeButton = new JButton("Export Shape Vects");
-		ExportShapeButton.setEnabled(false);
+		importShapeButton = new JButton("Import Shape Vects");
+		importShapeButton.setEnabled(false);
+
+		exportShapeButton = new JButton("Export Shape Vects");
+		exportShapeButton.setEnabled(false);
 
 		JButton loadImageButton = new JButton("Load Image");
 		loadImageButton.addActionListener(new ActionListener() {
@@ -106,10 +116,9 @@ public class MainWindow {
 					previousDir = fc.getCurrentDirectory();
 					File f = fc.getSelectedFile();
 					try {
-						panel.setImg(ImageIO.read(f));
-						NewShapeButton.setText("End Shape");
-						NewShapeButton.setEnabled(true);
-						ExportShapeButton.setEnabled(true);
+						mainPanel.setImg(ImageIO.read(f));
+						newShapeButton.setText("End Shape");
+						importShapeButton.setEnabled(true);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -119,21 +128,43 @@ public class MainWindow {
 		});
 		buttonPanel.add(loadImageButton);
 
-		NewShapeButton.addActionListener(new ActionListener() {
+		newShapeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (panel.isNewShape()) {
-					panel.endNewShape();
-					NewShapeButton.setText("Start New Shape");
+				if (mainPanel.isNewShape()) {
+					mainPanel.endNewShape();
+					exportShapeButton.setEnabled(true);
 				}
 				else {
-					panel.startNewShape();
-					NewShapeButton.setText("End Shape");
+					mainPanel.startNewShape();
+					newShapeButton.setEnabled(false);
+					exportShapeButton.setEnabled(false);
 				}
 			}
 		});
-		buttonPanel.add(NewShapeButton);
+		buttonPanel.add(newShapeButton);
 		
-		buttonPanel.add(ExportShapeButton);
+		exportShapeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFrame txtFrame = new JFrame();
+				txtFrame.setBounds(150, 150, 300, 400);
+				JTextPane txtPane = new JTextPane();
+				txtPane.setEditable(false);
+				txtPane.setText(mainPanel.getCArray());
+				txtFrame.getContentPane().add(txtPane, BorderLayout.CENTER);
+				txtFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				txtFrame.setVisible(true);
+			}
+		});
+		buttonPanel.add(exportShapeButton);
+		
+		importShapeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				LoadFrame load = new LoadFrame(MainWindow.this);
+				load.setVisible(true);
+				load.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
+		});
+		buttonPanel.add(importShapeButton);
 	}
 
 }
